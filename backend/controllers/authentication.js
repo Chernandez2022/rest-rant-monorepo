@@ -16,17 +16,18 @@ router.post("/", async (req, res) => {
       message: `Could not find a user with the provided username and password`,
     });
   } else {
-    const result = await jwt.encode(process.env.JWT_SECRET, { id: userId });
+    const result = await jwt.encode(process.env.JWT_SECRET, {
+      id: user.userId,
+    });
     res.json({ user: user, token: result.value });
   }
 });
 
-___;
 router.get("/profile", async (req, res) => {
   try {
     let user = await User.findOne({
       where: {
-        userId: req.session.userId,
+        // userId: req.session.userId,
       },
     });
     res.json(user);

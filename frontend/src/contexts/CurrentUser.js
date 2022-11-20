@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { useEffect, createContext, useState } from "react";
 
 export const CurrentUser = createContext();
 
@@ -14,6 +14,12 @@ function CurrentUserProvider({ children }) {
     };
     getLoggedInUser();
   }, []);
+
+  return (
+    <CurrentUser.Provider value={{ currentUser, setCurrentUser }}>
+      {children}
+    </CurrentUser.Provider>
+  );
 }
 
 export default CurrentUserProvider;
