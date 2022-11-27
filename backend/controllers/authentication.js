@@ -2,12 +2,14 @@ const router = require("express").Router();
 const db = require("../models");
 const bcrypt = require("bcrypt");
 const jwt = require("json-web-token");
+
 const { User } = db;
 
 router.post("/", async (req, res) => {
   let user = await User.findOne({
     where: { email: req.body.email },
   });
+
   if (
     !user ||
     !(await bcrypt.compare(req.body.password, user.passwordDigest))
@@ -25,11 +27,10 @@ router.post("/", async (req, res) => {
 
 router.get("/profile", async (req, res) => {
   try {
-    const [authenticationMethod, token] = req.headers.authorization.split("");
-    if (authenticationMethod == "Bearer") {
+    const [method, token] = req.headers.authorization.split(" ");
+    if (method == "Bearer") {
       const result = await jwt.decode(process.env.JWT_SECRET, token);
       const { id } = result.value;
-
       let user = await User.findOne({
         where: {
           userId: id,
@@ -37,7 +38,7 @@ router.get("/profile", async (req, res) => {
       });
       res.json(user);
     }
-  } catch {
+  } catch (err) {
     res.json(null);
   }
 });
